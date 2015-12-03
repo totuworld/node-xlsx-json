@@ -18,7 +18,7 @@ function CV(config, callback) {
   var wb = this.load_xlsx(config.input)
   var ws = this.ws(config, wb);
   var csv = this.csv(ws)
-  this.cvjson(csv, config.output, callback)
+  this.cvjson(csv, config.output, config.lowerCaseHeaders, callback)
 }
 
 CV.prototype.load_xlsx = function(input) {
@@ -39,7 +39,7 @@ CV.prototype.csv = function(ws) {
   return csv_file = xlsx.utils.make_csv(ws)
 }
 
-CV.prototype.cvjson = function(csv, output, callback) {
+CV.prototype.cvjson = function(csv, output, lowerCaseHeaders, callback) {
   var record = []
   var header = []
 
@@ -56,7 +56,8 @@ CV.prototype.cvjson = function(csv, output, callback) {
       }else{
         var obj = {};
         header.forEach(function(column, index) {
-          obj[column.trim()] = row[index].trim();
+          var key = lowerCaseHeaders ? column.trim().toLowerCase() : column.trim();
+          obj[key] = row[index].trim();
         })
         record.push(obj);
       }
