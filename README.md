@@ -2,12 +2,12 @@
 
 [![Build Status](https://travis-ci.org/DataGarage/node-xlsx-json.png?branch=master)](https://travis-ci.org/DataGarage/node-xlsx-json)
 
-Converting xlsx file to json files using nodejs
+Converting xlsx file to json files using nodejs. This is a fork of DataGarage module with additional option of converting excel headers to lowerCase as json keys.
 
 ## Install
 
 ```
-  npm install xlsx-to-json
+  npm install xlsx-to-json-lc
 ```
 
 ## Usage
@@ -16,7 +16,8 @@ Converting xlsx file to json files using nodejs
   xlsxj = require("xlsx-to-json");
   xlsxj({
     input: "sample.xlsx", 
-    output: "output.json"
+    output: "output.json",
+    lowerCaseHeaders:true //converts excel header rows into lowercase as json keys
   }, function(err, result) {
     if(err) {
       console.error(err);
