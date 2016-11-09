@@ -18,7 +18,7 @@ function CV(config, callback) {
   var wb = this.load_xlsx(config.input)
   var ws = this.ws(config, wb);
   var csv = this.csv(ws)
-  this.cvjson(csv, config.output, config.lowerCaseHeaders, callback)
+  this.cvjson(csv, config.output, config.lowerCaseHeaders, config.exceptionColumn, callback)
 }
 
 CV.prototype.load_xlsx = function(input) {
@@ -27,9 +27,19 @@ CV.prototype.load_xlsx = function(input) {
 
 CV.prototype.ws = function(config, wb) {
   var target_sheet = config.sheet;
+  var exceptionPtn = config.exceptionSheet;
 
   if (target_sheet == null)
     target_sheet = wb.SheetNames[0];
+  
+  //check exeption sheet
+  if (exceptionPtn != null) {
+    exceptionPtn = new RegExp(exceptionPtn);
+    if(exceptionPtn.test(target_sheet)==true) {
+      console.error("The target sheet and destination sheet are the same.\nRemove 'exceptionSheet' from config or select another sheet.");
+      process.exit(1);
+    }
+  }
 
   ws = wb.Sheets[target_sheet];
   return ws;
@@ -39,7 +49,7 @@ CV.prototype.csv = function(ws) {
   return csv_file = xlsx.utils.make_csv(ws)
 }
 
-CV.prototype.cvjson = function(csv, output, lowerCaseHeaders, callback) {
+CV.prototype.cvjson = function(csv, output, lowerCaseHeaders, exceptionColumn, callback) {
   var record = []
   var header = []
 
@@ -51,15 +61,32 @@ CV.prototype.cvjson = function(csv, output, lowerCaseHeaders, callback) {
     })
     .on('record', function(row, index){
 
+      if(exceptionColumn != null)
+        exceptionColumn = new RegExp(exceptionColumn);
+
       if(index === 0) {
         header = row;
       }else{
         var obj = {};
+        var haveKey = false;
         header.forEach(function(column, index) {
           var key = lowerCaseHeaders ? column.trim().toLowerCase() : column.trim();
-          obj[key] = row[index].trim();
+          if(exceptionColumn != null) {
+            if(exceptionColumn.test(key)==false) {
+              if(row[index].trim() !== "") {
+                haveKey = true;
+                obj[key] = row[index].trim();
+              }
+            }
+          } else {
+            if(row[index].trim() !== "") {
+                haveKey = true;
+                obj[key] = row[index].trim();
+              }
+          }
         })
-        record.push(obj);
+        if(haveKey)
+          record.push(obj);
       }
     })
     .on('end', function(count){
@@ -68,7 +95,7 @@ CV.prototype.cvjson = function(csv, output, lowerCaseHeaders, callback) {
       if(output !== null) {
       	var stream = fs.createWriteStream(output, { flags : 'w' });
       	stream.write(JSON.stringify(record));
-	callback(null, record);
+	      callback(null, record);
       }else {
       	callback(null, record);
       }
