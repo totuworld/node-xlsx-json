@@ -48,4 +48,20 @@ describe('xlsx to json', function() {
 		exist.should.be.true;
 	})
 
+	it('should access config exclude cloumn', function() {
+		xlsx2json({
+			input: './sample/interview.xlsx',
+			output: './sample/exception_test.json',
+			exceptionColumn: '^_'
+		}, function(err, result) {
+			should.not.exist(err);
+			result.should.be.an.instanceOf(Object);
+			should.not.exist(result[0]._desc);
+		})
+	})
+
+	it('should exist exception_test.json', function() {
+		var exist = fs.existsSync('./sample/exception_test.json')
+		exist.should.be.true;
+	})
 })
