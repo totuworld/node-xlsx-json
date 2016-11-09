@@ -1,6 +1,6 @@
 {
   "name": "xlsx-to-json-yo",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Convert xlsx to json with optional option to exceptionColumn the excel headers (Credits rahil471 Fork)",
   "main": "index.js",
   "scripts": {
