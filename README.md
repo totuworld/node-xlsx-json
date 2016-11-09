@@ -1,6 +1,6 @@
 # node-xlsx-json
 
-[![Build Status](https://travis-ci.org/DataGarage/node-xlsx-json.png?branch=master)](https://travis-ci.org/DataGarage/node-xlsx-json)
+[![Build Status](https://travis-ci.org/totuworld/node-xlsx-json.svg?branch=master)](https://travis-ci.org/totuworld/node-xlsx-json)
 
 xlsx file을 json으로 변경하는 모듈이다.
 
